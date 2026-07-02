@@ -1,4 +1,4 @@
-from my_project.analysis import hello_world
+import * from my_project.analysis
 
 
 def test_hello_world():

@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+import itertools
 from scipy.io import loadmat
+>>>>>>>
 
 def compute_correlations(norm_vals):
     """
@@ -86,3 +88,47 @@ def compute_individual_corrs(corr_tbl, norm_vals):
             indiv_corr[i] = np.corrcoef(data1[mask], data2[mask])[0, 1]
             
     return indiv_corr
+
+def getPairTableIdx(all_traces,neur_table):
+    # neur_table is expected to be a pandas DataFrame
+    # out = nchoosek(1:size(Tbl,1),2)
+    n = len(neur_table)
+    out = np.array(list(itertools.combinations(range(n), 2)))
+    
+    
+    
+    # PageNums = (j-1)*4+1:j*4
+    PageNums = np.arange((j - 1) * 4 + 1, j * 4 + 1)
+    
+    num_out = len(out)
+    # Create all combinations of (out_idx, ic_idx)
+    # out_indices is 0 to len(out)-1
+    # ic_indices is 0 to 3
+    out_indices = np.repeat(np.arange(num_out), 4)
+    ic_indices = np.tile(np.arange(4), num_out)
+    
+    NeuronNames_G1 = neur_table['ID'].iloc[out[out_indices, 0]].values
+    NeuronNames_G2 = neur_table['ID'].iloc[out[out_indices, 1]].values
+    
+    E = out[out_indices]
+    
+    # Dataframe = table2array(Tbl(:,3:6))
+    # Assuming columns 3-6 are the data columns
+    Dataframe = neur_table.iloc[:, 2:6].values
+    
+    T1 = Dataframe[E[:, 0], ic_indices]
+    T2 = Dataframe[E[:, 1], ic_indices]
+    
+    PageNums_idx = np.tile(PageNums, num_out)
+    
+    corr_tbl2 = pd.DataFrame({
+        'Animal': np.full(len(E), j),
+        'name1': NeuronNames_G1,
+        'name2': NeuronNames_G2,
+        'IDX1': T1,
+        'IDX2': T2,
+        'condition': PageNums_idx,
+    })
+    
+    return corr_tbl2
+>>>>>>>
